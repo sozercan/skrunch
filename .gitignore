@@ -1,0 +1,5 @@
+/skrunch
+*.test
+coverage.out
+*.coverprofile
+.DS_Store
