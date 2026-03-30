@@ -27,6 +27,8 @@ type ExitError struct {
 	Err  error
 }
 
+var newScanClient = githubscan.NewClient
+
 func (e *ExitError) Error() string {
 	if e == nil || e.Err == nil {
 		return ""
@@ -127,7 +129,7 @@ func runCommand(
 		return err
 	}
 
-	client, err := githubscan.NewClient(ctx, resolvedAuth)
+	client, err := newScanClient(ctx, resolvedAuth)
 	if err != nil {
 		return err
 	}

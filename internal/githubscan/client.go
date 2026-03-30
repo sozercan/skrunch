@@ -38,6 +38,15 @@ type WorkflowFile struct {
 	Content []byte
 }
 
+// ClientHooks configures a stub Client for tests.
+type ClientHooks struct {
+	GetCommit        func(context.Context, string, string, string) error
+	ListBranches     func(context.Context, string, string) ([]string, error)
+	ListTags         func(context.Context, string, string) ([]string, error)
+	RefContains      func(context.Context, string, string, string, string) (bool, error)
+	ListOrgReposPage func(context.Context, string, int) ([]*github.Repository, int, error)
+}
+
 type reachabilityRefKind string
 
 const (
@@ -108,6 +117,18 @@ func NewClient(_ context.Context, resolved skrunchauth.Resolved) (*Client, error
 		host:        resolved.Host,
 		tokenSource: resolved.Source,
 	}, nil
+}
+
+// NewStubClient returns a Client that delegates to the provided hooks instead of the network.
+func NewStubClient(host string, hooks ClientHooks) *Client {
+	return &Client{
+		host:                      host,
+		listOrgRepositoriesPageFn: hooks.ListOrgReposPage,
+		getCommitFn:               hooks.GetCommit,
+		listBranchesFn:            hooks.ListBranches,
+		listTagsFn:                hooks.ListTags,
+		refContainsFn:             hooks.RefContains,
+	}
 }
 
 func newAuthenticatedHTTPClient(token string) *http.Client {
