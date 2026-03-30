@@ -189,6 +189,7 @@ There is no persistent on-disk cache yet.
 ```bash
 make build
 make test
+make test-e2e
 make check
 ```
 
